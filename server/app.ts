@@ -6,7 +6,7 @@ import { createServer as createViteServer } from "vite";
 import { runMigrationPipeline } from "../src/engine/orchestrator.js";
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const INITIAL_PORT = Number(process.env.PORT) || 3000;
 
 app.use(cors());
 app.use(express.json());
@@ -99,15 +99,34 @@ app.get("/api/bob-sessions", (req: Request, res: Response) => {
 
 async function startServer() {
   const vite = await createViteServer({
-    server: { middlewareMode: true },
+    server: {
+      middlewareMode: true,
+      hmr: {
+        clientPort: 3000,
+      },
+    },
     appType: "spa",
     root: path.resolve(process.cwd(), "web"),
   });
 
   app.use(vite.middlewares);
 
-  app.listen(PORT, () => {
-    console.log(`\x1b[32m[APIShift Dashboard]\x1b[0m Running on http://localhost:${PORT}`);
+  listenOnPort(INITIAL_PORT);
+}
+
+function listenOnPort(port: number) {
+  const server = app.listen(port, () => {
+    console.log(`\x1b[32m[APIShift Dashboard]\x1b[0m Running on http://localhost:${port}`);
+  });
+
+  server.on("error", (err: any) => {
+    if (err.code === "EADDRINUSE") {
+      const nextPort = port + 1;
+      console.log(`\x1b[33m[APIShift Dashboard]\x1b[0m Port ${port} in use, trying http://localhost:${nextPort}...`);
+      listenOnPort(nextPort);
+    } else {
+      console.error(err);
+    }
   });
 }
 
