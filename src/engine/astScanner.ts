@@ -10,9 +10,26 @@ export function scanCallSites(dirPath: string): CallSite[] {
     const entries = fs.readdirSync(currentDir, { withFileTypes: true });
     for (const entry of entries) {
       const fullPath = path.join(currentDir, entry.name);
+      const normalized = fullPath.replace(/\\/g, "/");
+
+      if (
+        normalized.includes("/dist/") ||
+        normalized.includes("/build/") ||
+        normalized.includes("/artifacts/") ||
+        normalized.includes("/node_modules/")
+      ) {
+        continue;
+      }
+
       if (entry.isDirectory()) {
         walk(fullPath);
-      } else if (entry.isFile() && (entry.name.endsWith(".ts") || entry.name.endsWith(".js"))) {
+      } else if (
+        entry.isFile() &&
+        (entry.name.endsWith(".ts") || entry.name.endsWith(".tsx")) &&
+        !entry.name.endsWith(".d.ts") &&
+        !entry.name.endsWith(".js") &&
+        !entry.name.endsWith(".map")
+      ) {
         scanFileForCallSites(fullPath, callSites);
       }
     }
@@ -75,9 +92,25 @@ export function scanAffectedTests(testDirPath: string): AffectedTest[] {
     const entries = fs.readdirSync(currentDir, { withFileTypes: true });
     for (const entry of entries) {
       const fullPath = path.join(currentDir, entry.name);
+      const normalized = fullPath.replace(/\\/g, "/");
+
+      if (
+        normalized.includes("/dist/") ||
+        normalized.includes("/build/") ||
+        normalized.includes("/artifacts/") ||
+        normalized.includes("/node_modules/")
+      ) {
+        continue;
+      }
+
       if (entry.isDirectory()) {
         walk(fullPath);
-      } else if (entry.isFile() && (entry.name.endsWith(".test.ts") || entry.name.endsWith(".spec.ts"))) {
+      } else if (
+        entry.isFile() &&
+        (entry.name.endsWith(".test.ts") || entry.name.endsWith(".spec.ts") || entry.name.endsWith(".test.tsx")) &&
+        !entry.name.endsWith(".d.ts") &&
+        !entry.name.endsWith(".js")
+      ) {
         scanTestFile(fullPath, affectedTests);
       }
     }
