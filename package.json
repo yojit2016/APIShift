@@ -1,0 +1,20 @@
+{
+  "name": "apishift",
+  "version": "1.0.0",
+  "description": "AI-assisted developer workflow tool for safely evolving APIs across complex codebases",
+  "type": "module",
+  "main": "dist/engine/openapiDiff.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "test:fixture": "vitest run demo-repo/tests --reporter=json --outputFile=artifacts/test-results.json"
+  },
+  "dependencies": {
+    "yaml": "^2.7.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.0",
+    "typescript": "^5.7.3",
+    "vitest": "^3.0.5"
+  }
+}
