@@ -1,3 +1,5 @@
+import { migrationAdapter } from "./migrationAdapter.js";
+
 export interface OrderResponse {
   id: string;
   totalAmount?: number;
@@ -20,24 +22,28 @@ export class ApiClient {
   }
 
   public async getOrder(id: string): Promise<any> {
+    let rawResponse: any;
     if (this.schemaMode === "before") {
-      return {
+      rawResponse = {
         id: id || "ord_101",
         total: 150.0,
         status: "completed",
       };
+    } else {
+      // after.yaml schema: total is renamed to totalAmount
+      rawResponse = {
+        id: id || "ord_101",
+        totalAmount: 150.0,
+        status: "completed",
+      };
     }
-    // after.yaml schema: total is renamed to totalAmount
-    return {
-      id: id || "ord_101",
-      totalAmount: 150.0,
-      status: "completed",
-    };
+    return migrationAdapter.adaptGetOrderResponse(rawResponse);
   }
 
   public async createOrder(payload: CreateOrderPayload): Promise<any> {
+    const adaptedPayload = migrationAdapter.adaptCreateOrderPayload(payload);
     if (this.schemaMode === "after") {
-      if (!payload.customer || !payload.customer.id) {
+      if (!adaptedPayload.customer || !adaptedPayload.customer.id) {
         throw new Error("ValidationError: Missing required nested field customer.id");
       }
       return {
@@ -46,7 +52,7 @@ export class ApiClient {
         status: "created",
       };
     }
-    if (!payload.customer_id) {
+    if (!adaptedPayload.customer_id) {
       throw new Error("ValidationError: Missing required field customer_id");
     }
     return {
