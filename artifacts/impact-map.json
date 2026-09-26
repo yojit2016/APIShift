@@ -1,0 +1,447 @@
+[
+  {
+    "changedEndpoint": "GET /api/orders/{id}",
+    "changeType": "schema-change",
+    "diffDetail": "Response property 'total' renamed to 'totalAmount'",
+    "callSites": [
+      {
+        "file": "demo-repo/src/client/apiClient.ts",
+        "line": 24,
+        "snippet": "public async getOrder(id: string): Promise<any> {",
+        "endpoint": "GET /api/orders/{id}"
+      },
+      {
+        "file": "demo-repo/src/client/apiClient.ts",
+        "line": 68,
+        "snippet": "export async function getOrder(id: string): Promise<any> {",
+        "endpoint": "GET /api/orders/{id}"
+      },
+      {
+        "file": "demo-repo/src/client/apiClient.ts",
+        "line": 69,
+        "snippet": "return defaultApiClient.getOrder(id);",
+        "endpoint": "GET /api/orders/{id}"
+      },
+      {
+        "file": "demo-repo/src/client/migrationAdapter.ts",
+        "line": 39,
+        "snippet": "* Adapts incoming GET /api/orders/{id} response.",
+        "endpoint": "GET /api/orders/{id}"
+      },
+      {
+        "file": "demo-repo/src/client/migrationAdapter.ts",
+        "line": 44,
+        "snippet": "if (response && response.totalAmount !== undefined && response.total === undefined) {",
+        "endpoint": "GET /api/orders/{id}"
+      },
+      {
+        "file": "demo-repo/src/client/migrationAdapter.ts",
+        "line": 47,
+        "snippet": "total: response.totalAmount,",
+        "endpoint": "GET /api/orders/{id}"
+      },
+      {
+        "file": "demo-repo/src/services/checkoutService.ts",
+        "line": 1,
+        "snippet": "import { ApiClient, defaultApiClient, getOrder } from \"../client/apiClient.js\";",
+        "endpoint": "GET /api/orders/{id}"
+      },
+      {
+        "file": "demo-repo/src/services/checkoutService.ts",
+        "line": 10,
+        "snippet": "public async calculateOrderTax(id: string): Promise<number> {",
+        "endpoint": "GET /api/orders/{id}"
+      },
+      {
+        "file": "demo-repo/src/services/checkoutService.ts",
+        "line": 11,
+        "snippet": "const res = await this.client.getOrder(id);",
+        "endpoint": "GET /api/orders/{id}"
+      },
+      {
+        "file": "demo-repo/src/services/checkoutService.ts",
+        "line": 12,
+        "snippet": "if (typeof res.total !== \"number\") {",
+        "endpoint": "GET /api/orders/{id}"
+      },
+      {
+        "file": "demo-repo/src/services/checkoutService.ts",
+        "line": 13,
+        "snippet": "throw new Error(`AssertionError: expected ${typeof res.total} to be a number`);",
+        "endpoint": "GET /api/orders/{id}"
+      },
+      {
+        "file": "demo-repo/src/services/checkoutService.ts",
+        "line": 15,
+        "snippet": "return res.total * 0.08;",
+        "endpoint": "GET /api/orders/{id}"
+      },
+      {
+        "file": "demo-repo/src/services/checkoutService.ts",
+        "line": 18,
+        "snippet": "public async validateOrderMinimum(id: string): Promise<boolean> {",
+        "endpoint": "GET /api/orders/{id}"
+      },
+      {
+        "file": "demo-repo/src/services/checkoutService.ts",
+        "line": 19,
+        "snippet": "const res = await this.client.getOrder(id);",
+        "endpoint": "GET /api/orders/{id}"
+      },
+      {
+        "file": "demo-repo/src/services/checkoutService.ts",
+        "line": 20,
+        "snippet": "if (res.total === undefined) {",
+        "endpoint": "GET /api/orders/{id}"
+      },
+      {
+        "file": "demo-repo/src/services/checkoutService.ts",
+        "line": 23,
+        "snippet": "return res.total >= 50;",
+        "endpoint": "GET /api/orders/{id}"
+      },
+      {
+        "file": "demo-repo/src/services/checkoutService.ts",
+        "line": 27,
+        "snippet": "export async function calculateOrderTax(id: string): Promise<number> {",
+        "endpoint": "GET /api/orders/{id}"
+      },
+      {
+        "file": "demo-repo/src/services/checkoutService.ts",
+        "line": 28,
+        "snippet": "const res = await getOrder(id);",
+        "endpoint": "GET /api/orders/{id}"
+      },
+      {
+        "file": "demo-repo/src/services/checkoutService.ts",
+        "line": 29,
+        "snippet": "if (typeof res.total !== \"number\") {",
+        "endpoint": "GET /api/orders/{id}"
+      },
+      {
+        "file": "demo-repo/src/services/checkoutService.ts",
+        "line": 30,
+        "snippet": "throw new Error(`AssertionError: expected ${typeof res.total} to be a number`);",
+        "endpoint": "GET /api/orders/{id}"
+      },
+      {
+        "file": "demo-repo/src/services/checkoutService.ts",
+        "line": 32,
+        "snippet": "return res.total * 0.08;",
+        "endpoint": "GET /api/orders/{id}"
+      },
+      {
+        "file": "demo-repo/src/services/checkoutService.ts",
+        "line": 35,
+        "snippet": "export async function validateOrderMinimum(id: string): Promise<boolean> {",
+        "endpoint": "GET /api/orders/{id}"
+      },
+      {
+        "file": "demo-repo/src/services/checkoutService.ts",
+        "line": 36,
+        "snippet": "const res = await getOrder(id);",
+        "endpoint": "GET /api/orders/{id}"
+      },
+      {
+        "file": "demo-repo/src/services/checkoutService.ts",
+        "line": 37,
+        "snippet": "if (res.total === undefined) {",
+        "endpoint": "GET /api/orders/{id}"
+      },
+      {
+        "file": "demo-repo/src/services/checkoutService.ts",
+        "line": 40,
+        "snippet": "return res.total >= 50;",
+        "endpoint": "GET /api/orders/{id}"
+      },
+      {
+        "file": "demo-repo/src/services/orderService.ts",
+        "line": 1,
+        "snippet": "import { ApiClient, defaultApiClient, getOrder, createOrder } from \"../client/apiClient.js\";",
+        "endpoint": "GET /api/orders/{id}"
+      },
+      {
+        "file": "demo-repo/src/services/orderService.ts",
+        "line": 10,
+        "snippet": "public async fetchOrderSummary(id: string): Promise<{ id: string; total: number; status: string }> {",
+        "endpoint": "GET /api/orders/{id}"
+      },
+      {
+        "file": "demo-repo/src/services/orderService.ts",
+        "line": 11,
+        "snippet": "const res = await this.client.getOrder(id);",
+        "endpoint": "GET /api/orders/{id}"
+      },
+      {
+        "file": "demo-repo/src/services/orderService.ts",
+        "line": 14,
+        "snippet": "total: res.total,",
+        "endpoint": "GET /api/orders/{id}"
+      },
+      {
+        "file": "demo-repo/src/services/orderService.ts",
+        "line": 27,
+        "snippet": "export async function fetchOrderSummary(id: string) {",
+        "endpoint": "GET /api/orders/{id}"
+      },
+      {
+        "file": "demo-repo/src/services/orderService.ts",
+        "line": 28,
+        "snippet": "const res = await getOrder(id);",
+        "endpoint": "GET /api/orders/{id}"
+      },
+      {
+        "file": "demo-repo/src/services/orderService.ts",
+        "line": 31,
+        "snippet": "total: res.total,",
+        "endpoint": "GET /api/orders/{id}"
+      }
+    ],
+    "affectedTests": [
+      {
+        "file": "demo-repo/tests/orders.test.ts",
+        "testName": "Probe 01: fetchOrderSummary should return numeric total property",
+        "associatedEndpoint": "GET /api/orders/{id}"
+      },
+      {
+        "file": "demo-repo/tests/orders.test.ts",
+        "testName": "Probe 02: fetchOrderSummary should return non-undefined total",
+        "associatedEndpoint": "GET /api/orders/{id}"
+      },
+      {
+        "file": "demo-repo/tests/orders.test.ts",
+        "testName": "Probe 03: fetchOrderSummary total property should equal 150.0",
+        "associatedEndpoint": "GET /api/orders/{id}"
+      },
+      {
+        "file": "demo-repo/tests/orders.test.ts",
+        "testName": "Probe 04: calculateOrderTax for standard order #104",
+        "associatedEndpoint": "GET /api/orders/{id}"
+      },
+      {
+        "file": "demo-repo/tests/orders.test.ts",
+        "testName": "Probe 05: calculateOrderTax for express order #105",
+        "associatedEndpoint": "GET /api/orders/{id}"
+      },
+      {
+        "file": "demo-repo/tests/orders.test.ts",
+        "testName": "Probe 06: calculateOrderTax for international order #106",
+        "associatedEndpoint": "GET /api/orders/{id}"
+      },
+      {
+        "file": "demo-repo/tests/orders.test.ts",
+        "testName": "Probe 07: calculateOrderTax for bulk order #107",
+        "associatedEndpoint": "GET /api/orders/{id}"
+      },
+      {
+        "file": "demo-repo/tests/orders.test.ts",
+        "testName": "Probe 08: validateOrderMinimum for order #108",
+        "associatedEndpoint": "GET /api/orders/{id}"
+      },
+      {
+        "file": "demo-repo/tests/orders.test.ts",
+        "testName": "Probe 09: validateOrderMinimum for order #109",
+        "associatedEndpoint": "GET /api/orders/{id}"
+      },
+      {
+        "file": "demo-repo/tests/orders.test.ts",
+        "testName": "Probe 10: validateOrderMinimum for order #110",
+        "associatedEndpoint": "GET /api/orders/{id}"
+      },
+      {
+        "file": "demo-repo/tests/orders.test.ts",
+        "testName": "Probe 11: validateOrderMinimum for order #111",
+        "associatedEndpoint": "GET /api/orders/{id}"
+      },
+      {
+        "file": "demo-repo/tests/orders.test.ts",
+        "testName": "Probe 12: fetchOrderSummary response schema structure check",
+        "associatedEndpoint": "GET /api/orders/{id}"
+      },
+      {
+        "file": "demo-repo/tests/orders.test.ts",
+        "testName": "Probe 13: fetchOrderSummary for VIP customer order #113",
+        "associatedEndpoint": "GET /api/orders/{id}"
+      },
+      {
+        "file": "demo-repo/tests/orders.test.ts",
+        "testName": "Probe 14: calculateOrderTax for subscription order #114",
+        "associatedEndpoint": "GET /api/orders/{id}"
+      },
+      {
+        "file": "demo-repo/tests/orders.test.ts",
+        "testName": "Probe 15: validateOrderMinimum for wholesale order #115",
+        "associatedEndpoint": "GET /api/orders/{id}"
+      },
+      {
+        "file": "demo-repo/tests/orders.test.ts",
+        "testName": "Probe 16: fetchOrderSummary invoice total verification #116",
+        "associatedEndpoint": "GET /api/orders/{id}"
+      },
+      {
+        "file": "demo-repo/tests/orders.test.ts",
+        "testName": "Probe 17: calculateOrderTax with promo code order #117",
+        "associatedEndpoint": "GET /api/orders/{id}"
+      }
+    ]
+  },
+  {
+    "changedEndpoint": "POST /api/orders",
+    "changeType": "schema-change",
+    "diffDetail": "Request body property 'customer_id' unflattened to 'customer.id'",
+    "callSites": [
+      {
+        "file": "demo-repo/src/client/apiClient.ts",
+        "line": 11,
+        "snippet": "customer_id?: string;",
+        "endpoint": "POST /api/orders"
+      },
+      {
+        "file": "demo-repo/src/client/apiClient.ts",
+        "line": 43,
+        "snippet": "public async createOrder(payload: CreateOrderPayload): Promise<any> {",
+        "endpoint": "POST /api/orders"
+      },
+      {
+        "file": "demo-repo/src/client/apiClient.ts",
+        "line": 55,
+        "snippet": "if (!adaptedPayload.customer_id) {",
+        "endpoint": "POST /api/orders"
+      },
+      {
+        "file": "demo-repo/src/client/apiClient.ts",
+        "line": 56,
+        "snippet": "throw new Error(\"ValidationError: Missing required field customer_id\");",
+        "endpoint": "POST /api/orders"
+      },
+      {
+        "file": "demo-repo/src/client/apiClient.ts",
+        "line": 72,
+        "snippet": "export async function createOrder(payload: CreateOrderPayload): Promise<any> {",
+        "endpoint": "POST /api/orders"
+      },
+      {
+        "file": "demo-repo/src/client/apiClient.ts",
+        "line": 73,
+        "snippet": "return defaultApiClient.createOrder(payload);",
+        "endpoint": "POST /api/orders"
+      },
+      {
+        "file": "demo-repo/src/client/migrationAdapter.ts",
+        "line": 16,
+        "snippet": "customer_id?: string;",
+        "endpoint": "POST /api/orders"
+      },
+      {
+        "file": "demo-repo/src/client/migrationAdapter.ts",
+        "line": 54,
+        "snippet": "* Adapts outgoing POST /api/orders request payload.",
+        "endpoint": "POST /api/orders"
+      },
+      {
+        "file": "demo-repo/src/client/migrationAdapter.ts",
+        "line": 55,
+        "snippet": "* If customer_id is present and customer object is missing, maps customer: { id: customer_id }.",
+        "endpoint": "POST /api/orders"
+      },
+      {
+        "file": "demo-repo/src/client/migrationAdapter.ts",
+        "line": 59,
+        "snippet": "if (payload && payload.customer_id && !payload.customer) {",
+        "endpoint": "POST /api/orders"
+      },
+      {
+        "file": "demo-repo/src/client/migrationAdapter.ts",
+        "line": 60,
+        "snippet": "const { customer_id, ...rest } = payload;",
+        "endpoint": "POST /api/orders"
+      },
+      {
+        "file": "demo-repo/src/client/migrationAdapter.ts",
+        "line": 63,
+        "snippet": "customer_id,",
+        "endpoint": "POST /api/orders"
+      },
+      {
+        "file": "demo-repo/src/client/migrationAdapter.ts",
+        "line": 64,
+        "snippet": "customer: { id: customer_id },",
+        "endpoint": "POST /api/orders"
+      },
+      {
+        "file": "demo-repo/src/services/orderService.ts",
+        "line": 1,
+        "snippet": "import { ApiClient, defaultApiClient, getOrder, createOrder } from \"../client/apiClient.js\";",
+        "endpoint": "POST /api/orders"
+      },
+      {
+        "file": "demo-repo/src/services/orderService.ts",
+        "line": 19,
+        "snippet": "public async placeOrder(customerId: string, items: Array<{ itemId: string; quantity: number }> = [{ itemId: \"item_1\", quantity: 1 }]): Promise<any> {",
+        "endpoint": "POST /api/orders"
+      },
+      {
+        "file": "demo-repo/src/services/orderService.ts",
+        "line": 20,
+        "snippet": "return await this.client.createOrder({",
+        "endpoint": "POST /api/orders"
+      },
+      {
+        "file": "demo-repo/src/services/orderService.ts",
+        "line": 21,
+        "snippet": "customer_id: customerId,",
+        "endpoint": "POST /api/orders"
+      },
+      {
+        "file": "demo-repo/src/services/orderService.ts",
+        "line": 36,
+        "snippet": "export async function placeOrder(customerId: string, items: Array<{ itemId: string; quantity: number }> = [{ itemId: \"item_1\", quantity: 1 }]) {",
+        "endpoint": "POST /api/orders"
+      },
+      {
+        "file": "demo-repo/src/services/orderService.ts",
+        "line": 37,
+        "snippet": "return await createOrder({",
+        "endpoint": "POST /api/orders"
+      },
+      {
+        "file": "demo-repo/src/services/orderService.ts",
+        "line": 38,
+        "snippet": "customer_id: customerId,",
+        "endpoint": "POST /api/orders"
+      }
+    ],
+    "affectedTests": [
+      {
+        "file": "demo-repo/tests/orders.test.ts",
+        "testName": "Probe 18: placeOrder passing legacy customer_id cust_42",
+        "associatedEndpoint": "POST /api/orders"
+      },
+      {
+        "file": "demo-repo/tests/orders.test.ts",
+        "testName": "Probe 19: placeOrder passing legacy customer_id cust_guest",
+        "associatedEndpoint": "POST /api/orders"
+      },
+      {
+        "file": "demo-repo/tests/orders.test.ts",
+        "testName": "Probe 20: placeOrder passing legacy customer_id cust_corp_1",
+        "associatedEndpoint": "POST /api/orders"
+      },
+      {
+        "file": "demo-repo/tests/orders.test.ts",
+        "testName": "Probe 21: placeOrder passing legacy customer_id cust_prem_9",
+        "associatedEndpoint": "POST /api/orders"
+      },
+      {
+        "file": "demo-repo/tests/orders.test.ts",
+        "testName": "Probe 22: placeOrder passing legacy customer_id with multi-items",
+        "associatedEndpoint": "POST /api/orders"
+      },
+      {
+        "file": "demo-repo/tests/orders.test.ts",
+        "testName": "Probe 23: placeOrder passing legacy customer_id with promo payload",
+        "associatedEndpoint": "POST /api/orders"
+      }
+    ]
+  }
+]
