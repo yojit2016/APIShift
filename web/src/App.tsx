@@ -3,7 +3,6 @@ import { HeaderBanner } from './components/HeaderBanner';
 import { PipelineRibbon } from './components/PipelineRibbon';
 import { ImpactMapColumn } from './components/ImpactMapColumn';
 import { ClusterReportColumn } from './components/ClusterReportColumn';
-import { EvidenceLedger } from './components/EvidenceLedger';
 import { DynamicFooter } from './components/DynamicFooter';
 import { BobSessionsModal } from './components/BobSessionsModal';
 
@@ -71,11 +70,11 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
+    <div className="h-screen w-screen bg-[#090d16] text-zinc-100 flex flex-col font-sans overflow-hidden">
       <HeaderBanner
         onRunPipeline={handleRunPipeline}
+        onOpenBobSessions={() => setIsBobModalOpen(true)}
         isRunning={isRunning}
-        timeSeconds={summary.timeSeconds}
       />
 
       <PipelineRibbon
@@ -86,17 +85,16 @@ export const App: React.FC = () => {
         totalProbes={40}
       />
 
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <ImpactMapColumn impactMap={impactMap} adapterCode={adapterCode} />
-          <ClusterReportColumn clusterReport={clusterReport} />
-        </div>
+      <main className="flex-1 p-3 min-h-0 overflow-hidden">
+        <div className="h-full grid grid-cols-1 lg:grid-cols-12 gap-3">
+          <div className="lg:col-span-5 h-full min-h-0">
+            <ImpactMapColumn impactMap={impactMap} adapterCode={adapterCode} />
+          </div>
 
-        <EvidenceLedger
-          totalFailingBefore={summary.totalFailingBefore}
-          autoFixed={summary.autoFixed}
-          totalProbes={40}
-        />
+          <div className="lg:col-span-7 h-full min-h-0">
+            <ClusterReportColumn clusterReport={clusterReport} />
+          </div>
+        </div>
       </main>
 
       <DynamicFooter
@@ -104,7 +102,6 @@ export const App: React.FC = () => {
         autoFixed={summary.autoFixed}
         clustersCount={summary.clusters}
         timeSeconds={summary.timeSeconds}
-        onOpenBobSessions={() => setIsBobModalOpen(true)}
       />
 
       <BobSessionsModal

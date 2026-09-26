@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Layers2, CheckCircle2, AlertOctagon, ChevronDown, ChevronRight, FileText } from 'lucide-react';
+import { Layers2, CheckCircle2, ChevronDown, ChevronRight, FileText, Activity } from 'lucide-react';
+import { EvidenceLedger } from './EvidenceLedger';
 
 interface FailureCluster {
   clusterId: string;
@@ -33,126 +34,128 @@ export const ClusterReportColumn: React.FC<ClusterReportColumnProps> = ({ cluste
 
   const totalFailing = clusterReport?.summary.totalFailingBefore ?? 23;
   const totalClustersCount = clusterReport?.summary.clusters ?? 2;
+  const autoFixed = clusterReport?.summary.autoFixed ?? 23;
   const clusters = clusterReport?.clusters ?? [];
 
+  const noiseReductionRate = totalFailing > 0
+    ? (((totalFailing - totalClustersCount) / totalFailing) * 100).toFixed(1)
+    : '91.3';
+
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+    <div className="flex flex-col h-full bg-zinc-900/60 border border-zinc-800/80 rounded-xl overflow-hidden shadow-sm">
+      <div className="p-3 bg-zinc-900/90 border-b border-zinc-800/80 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-2">
-          <div className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse" />
-          <h2 className="text-lg font-bold font-display text-white tracking-wide">
-            Module C & D: Failure Deduplication & Root Causes
+          <Activity className="w-4 h-4 text-zinc-400" />
+          <h2 className="text-xs font-semibold tracking-wide uppercase text-zinc-400 font-sans">
+            Failure Deduplication & Verification Ledger
           </h2>
         </div>
-        <span className="text-xs font-mono px-2 py-1 rounded bg-amber-950/60 text-amber-300 border border-amber-800/60">
-          {totalClustersCount} Deduplicated Root Causes
+        <span className="text-[11px] font-mono text-zinc-500">
+          Module C & D
         </span>
       </div>
 
-      <div className="p-4 rounded-xl bg-gradient-to-r from-amber-950/40 via-slate-900 to-emerald-950/40 border border-amber-500/30 flex items-center justify-between gap-4 shadow-lg">
-        <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400">
-            <Layers2 className="w-5 h-5" />
+      <div className="flex-1 overflow-y-auto min-h-0 p-3 space-y-3">
+        <div className="p-3 rounded-lg bg-zinc-950/80 border border-zinc-800/80 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="p-1.5 rounded bg-zinc-900 border border-zinc-800 text-amber-400">
+              <Layers2 className="w-4 h-4" />
+            </div>
+            <div>
+              <div className="text-xs font-mono font-bold text-zinc-200 flex items-center gap-1.5">
+                <span className="text-rose-400 font-extrabold">{totalFailing} Failures</span>
+                <span className="text-zinc-600">→</span>
+                <span className="text-emerald-400 font-extrabold">{totalClustersCount} Root Causes</span>
+              </div>
+              <p className="text-[11px] text-zinc-500 font-sans">
+                Automated failure signature clustering
+              </p>
+            </div>
           </div>
-          <div>
-            <h3 className="text-sm font-mono font-bold text-slate-100 flex items-center gap-2">
-              <span className="text-rose-400 font-extrabold text-base">{totalFailing} Raw CI Failures</span>
-              <span className="text-slate-500">→</span>
-              <span className="text-emerald-400 font-extrabold text-base">Deduplicated to {totalClustersCount} Architectural Root Causes</span>
-            </h3>
-            <p className="text-xs text-slate-400 mt-0.5 font-sans">
-              Automated AST root-cause attribution eliminates noise and groups failure signatures.
-            </p>
+
+          <div className="text-right">
+            <span className="text-xs font-mono font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+              {noiseReductionRate}% Noise Reduction
+            </span>
           </div>
         </div>
-      </div>
 
-      <div className="space-y-4">
-        {clusters.map((cluster) => {
-          const isExpanded = expandedCluster === cluster.clusterId;
-          const isVerified = cluster.verified;
+        <div className="space-y-2">
+          {clusters.map((cluster) => {
+            const isExpanded = expandedCluster === cluster.clusterId;
+            const isVerified = cluster.verified;
 
-          return (
-            <div
-              key={cluster.clusterId}
-              className={`glass-panel glass-panel-hover rounded-xl overflow-hidden border transition-all ${
-                isVerified ? 'border-emerald-500/30 glow-emerald' : 'border-rose-500/30 glow-rose'
-              }`}
-            >
-              <div className="p-4 bg-slate-900/60">
-                <div className="flex items-start justify-between gap-3 mb-2">
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs font-bold px-2 py-0.5 rounded bg-slate-800 text-slate-200 border border-slate-700">
+            return (
+              <div
+                key={cluster.clusterId}
+                className="bg-zinc-950/80 border border-zinc-800/80 rounded-lg overflow-hidden transition-all"
+              >
+                <div
+                  onClick={() => toggleCluster(cluster.clusterId)}
+                  className="p-2.5 flex items-center justify-between gap-2 cursor-pointer hover:bg-zinc-900/40 transition-colors"
+                >
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="font-mono text-xs font-bold text-zinc-200 bg-zinc-900 px-2 py-0.5 rounded border border-zinc-800">
                       {cluster.clusterId}
                     </span>
-                    <span className="font-mono text-xs px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-800">
+                    <span className="font-mono text-[11px] text-cyan-400 truncate">
                       {cluster.endpoint}
                     </span>
                   </div>
 
-                  <span
-                    className={`flex items-center gap-1 text-xs font-mono px-2.5 py-0.5 rounded-full border ${
-                      isVerified
-                        ? 'bg-emerald-950/80 text-emerald-300 border-emerald-700/60'
-                        : 'bg-rose-950/80 text-rose-300 border-rose-700/60'
-                    }`}
-                  >
-                    {isVerified ? (
-                      <>
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                        <span>REMEDIATED</span>
-                      </>
-                    ) : (
-                      <>
-                        <AlertOctagon className="w-3.5 h-3.5 text-rose-400" />
-                        <span>FAILING</span>
-                      </>
-                    )}
-                  </span>
-                </div>
-
-                <p className="text-xs font-mono text-slate-200 mt-2 bg-slate-950/70 p-2.5 rounded-lg border border-slate-800 leading-relaxed flex items-start gap-2">
-                  <FileText className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-                  <span>
-                    <strong className="text-amber-300">Root Cause:</strong> {cluster.rootCause}
-                  </span>
-                </p>
-
-                <button
-                  onClick={() => toggleCluster(cluster.clusterId)}
-                  className="mt-3 text-xs font-mono text-cyan-400 hover:text-cyan-300 flex items-center gap-1 font-medium cursor-pointer"
-                >
-                  {isExpanded ? (
-                    <ChevronDown className="w-3.5 h-3.5" />
-                  ) : (
-                    <ChevronRight className="w-3.5 h-3.5" />
-                  )}
-                  <span>
-                    {isExpanded ? 'Hide' : 'View'} {cluster.failingTests.length} Attributed Failing Tests
-                  </span>
-                </button>
-              </div>
-
-              {isExpanded && (
-                <div className="p-3 bg-slate-950/90 border-t border-slate-800 text-xs font-mono space-y-1.5 max-h-48 overflow-y-auto">
-                  {cluster.failingTests.map((tName, tIdx) => (
-                    <div
-                      key={tIdx}
-                      className="p-1.5 rounded bg-slate-900/60 border border-slate-800/80 text-slate-300 flex items-center justify-between"
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-900 text-zinc-400 border border-zinc-800">
+                      {cluster.failingTests.length} tests
+                    </span>
+                    <span
+                      className={`text-[10px] font-mono px-2 py-0.5 rounded font-semibold ${
+                        isVerified
+                          ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                          : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
+                      }`}
                     >
-                      <span className="truncate">{tName}</span>
-                      <span className="text-[10px] text-rose-400 bg-rose-950/40 px-1.5 py-0.5 rounded border border-rose-800/40 shrink-0">
-                        {cluster.clusterId === 'cluster-get-orders-total'
-                          ? 'Schema Drift'
-                          : 'Payload Drift'}
-                      </span>
-                    </div>
-                  ))}
+                      {isVerified ? 'VERIFIED' : 'FAILING'}
+                    </span>
+                    {isExpanded ? (
+                      <ChevronDown className="w-3.5 h-3.5 text-zinc-400" />
+                    ) : (
+                      <ChevronRight className="w-3.5 h-3.5 text-zinc-400" />
+                    )}
+                  </div>
                 </div>
-              )}
-            </div>
-          );
-        })}
+
+                <div className="px-2.5 pb-2.5">
+                  <p className="text-xs font-mono text-zinc-300 bg-zinc-900/60 p-2 rounded border border-zinc-800/60 flex items-start gap-1.5 leading-relaxed">
+                    <FileText className="w-3.5 h-3.5 text-amber-400 shrink-0 mt-0.5" />
+                    <span>
+                      <strong className="text-amber-400">Root Cause:</strong> {cluster.rootCause}
+                    </span>
+                  </p>
+                </div>
+
+                {isExpanded && (
+                  <div className="p-2.5 bg-zinc-950 border-t border-zinc-800/80 text-xs font-mono space-y-1 max-h-36 overflow-y-auto">
+                    {cluster.failingTests.map((tName, tIdx) => (
+                      <div
+                        key={tIdx}
+                        className="p-1 rounded bg-zinc-900/40 border border-zinc-800/40 text-zinc-400 flex items-center justify-between text-[11px]"
+                      >
+                        <span className="truncate">{tName}</span>
+                        <CheckCircle2 className="w-3 h-3 text-emerald-400 shrink-0" />
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        <EvidenceLedger
+          totalFailingBefore={totalFailing}
+          autoFixed={autoFixed}
+          totalProbes={40}
+        />
       </div>
     </div>
   );

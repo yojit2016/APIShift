@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layers, Code2, Layers2, CheckCircle2, RefreshCw } from 'lucide-react';
+import { Check, RefreshCw } from 'lucide-react';
 
 interface PipelineRibbonProps {
   isRunning: boolean;
@@ -19,69 +19,58 @@ export const PipelineRibbon: React.FC<PipelineRibbonProps> = ({
   const steps = [
     {
       id: 'module-a',
-      name: 'Module A: Impact Analyzer',
-      desc: 'Scanned AST call sites & test mappings',
-      icon: Layers,
-      color: 'border-cyan-500/50 text-cyan-400 bg-cyan-950/30',
+      code: 'MODULE A',
+      label: 'Impact Analyzer',
+      detail: 'AST Call Sites Mapped',
     },
     {
       id: 'module-b',
-      name: 'Module B: Migration Codegen',
-      desc: 'Synthesized backward-compatible adapter',
-      icon: Code2,
-      color: 'border-purple-500/50 text-purple-400 bg-purple-950/30',
+      code: 'MODULE B',
+      label: 'Migration Codegen',
+      detail: 'Adapter Synthesized',
     },
     {
       id: 'module-c',
-      name: 'Module C: Failure Clusterer',
-      desc: `Deduplicated ${totalFailures} failures into ${totalClusters} root causes`,
-      icon: Layers2,
-      color: 'border-amber-500/50 text-amber-400 bg-amber-950/30',
+      code: 'MODULE C',
+      label: 'Failure Clusterer',
+      detail: `${totalFailures} Failures → ${totalClusters} Causes`,
     },
     {
       id: 'module-d',
-      name: 'Module D: Fixer & Verification',
-      desc: `Executed ${totalProbes - (totalFailures - autoFixed)}/${totalProbes} tests green`,
-      icon: CheckCircle2,
-      color: 'border-emerald-500/50 text-emerald-400 bg-emerald-950/30',
+      code: 'MODULE D',
+      label: 'Fixer & Verification',
+      detail: `${totalProbes - (totalFailures - autoFixed)}/${totalProbes} Probes Green`,
     },
   ];
 
   return (
-    <div className="w-full bg-slate-900/60 border-b border-slate-800 py-3">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          {steps.map((step, idx) => {
-            const Icon = step.icon;
-            return (
-              <div
-                key={step.id}
-                className={`relative flex items-center gap-3 p-3 rounded-xl border transition-all ${
-                  step.color
-                } ${isRunning ? 'animate-pulse' : ''}`}
-              >
-                <div className="p-2 rounded-lg bg-slate-900/80 border border-slate-700/50">
-                  {isRunning && idx === 1 ? (
-                    <RefreshCw className="w-4 h-4 animate-spin text-cyan-400" />
-                  ) : (
-                    <Icon className="w-4 h-4" />
-                  )}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-xs font-mono font-bold tracking-wide uppercase truncate">
-                      {step.name}
-                    </h3>
-                    <span className="text-[10px] font-mono opacity-60">0{idx + 1}</span>
-                  </div>
-                  <p className="text-[11px] text-slate-300 font-sans truncate mt-0.5">
-                    {step.desc}
-                  </p>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+    <div className="h-10 bg-zinc-950/90 border-b border-zinc-800/80 px-4 flex items-center shrink-0 select-none overflow-x-auto">
+      <div className="flex items-center w-full justify-between gap-4 text-xs font-sans">
+        {steps.map((step, idx) => (
+          <div key={step.id} className="flex items-center gap-2.5 min-w-0">
+            <div className="flex items-center justify-center w-4 h-4 rounded-full bg-emerald-500/10 border border-emerald-500/40 text-emerald-400 shrink-0">
+              {isRunning && idx === 1 ? (
+                <RefreshCw className="w-2.5 h-2.5 animate-spin text-amber-400" />
+              ) : (
+                <Check className="w-2.5 h-2.5 stroke-[3]" />
+              )}
+            </div>
+
+            <div className="flex items-center gap-1.5 truncate">
+              <span className="font-mono text-[10px] font-bold text-zinc-400 uppercase tracking-wide">
+                {step.code}:
+              </span>
+              <span className="font-medium text-zinc-200 truncate">{step.label}</span>
+              <span className="hidden xl:inline text-[11px] text-zinc-500 font-mono">
+                ({step.detail})
+              </span>
+            </div>
+
+            {idx < steps.length - 1 && (
+              <div className="w-8 h-[1px] bg-zinc-800 shrink-0 mx-1 hidden sm:block" />
+            )}
+          </div>
+        ))}
       </div>
     </div>
   );

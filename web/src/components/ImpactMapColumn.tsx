@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { AlertCircle, Sparkles, ChevronDown, ChevronRight, Terminal } from 'lucide-react';
+import { AlertCircle, ChevronDown, ChevronRight, Terminal, Code2 } from 'lucide-react';
 
 interface CallSite {
   file: string;
@@ -22,107 +22,111 @@ interface ImpactMapColumnProps {
 }
 
 export const ImpactMapColumn: React.FC<ImpactMapColumnProps> = ({ impactMap, adapterCode }) => {
-  const [showAdapterCode, setShowAdapterCode] = useState(true);
+  const [selectedEndpointIndex, setSelectedEndpointIndex] = useState<number>(0);
+  const [showAdapterCode, setShowAdapterCode] = useState<boolean>(false);
+
+  const activeItem = impactMap[selectedEndpointIndex] || impactMap[0] || {
+    changedEndpoint: 'GET /api/orders/{id}',
+    changeType: 'schema-change',
+    diffDetail: 'Response property total renamed to totalAmount',
+    callSites: [],
+  };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+    <div className="flex flex-col h-full bg-zinc-900/60 border border-zinc-800/80 rounded-xl overflow-hidden shadow-sm">
+      <div className="p-3 bg-zinc-900/90 border-b border-zinc-800/80 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-2">
-          <div className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse" />
-          <h2 className="text-lg font-bold font-display text-white tracking-wide">
-            Module A & B: Blast Radius & Impact Map
+          <Code2 className="w-4 h-4 text-zinc-400" />
+          <h2 className="text-xs font-semibold tracking-wide uppercase text-zinc-400 font-sans">
+            Contract Drift & Blast Radius
           </h2>
         </div>
-        <span className="text-xs font-mono px-2 py-1 rounded bg-slate-800 text-slate-300 border border-slate-700">
-          {impactMap.length} Changed Endpoints
+        <span className="text-[11px] font-mono text-zinc-500">
+          Module A & B
         </span>
       </div>
 
-      <div className="space-y-4">
-        {impactMap.map((item, idx) => (
-          <div
-            key={idx}
-            className="glass-panel glass-panel-hover rounded-xl p-4 transition-all duration-200"
-          >
-            <div className="flex items-start justify-between gap-3 mb-3">
-              <div>
-                <span className="inline-block font-mono text-xs font-bold px-2 py-0.5 rounded bg-cyan-950/80 text-cyan-300 border border-cyan-800/60 mb-1.5">
-                  {item.changedEndpoint}
-                </span>
-                <p className="text-xs font-mono text-amber-300 flex items-center gap-1.5">
-                  <AlertCircle className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                  {item.diffDetail}
-                </p>
-              </div>
-              <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700 shrink-0">
-                {item.callSites.length} Call Sites
+      <div className="flex border-b border-zinc-800/80 bg-zinc-950/80 p-1.5 gap-1 shrink-0 overflow-x-auto">
+        {impactMap.map((item, idx) => {
+          const isSelected = idx === selectedEndpointIndex;
+          const isGet = item.changedEndpoint.startsWith('GET');
+          return (
+            <button
+              key={idx}
+              onClick={() => setSelectedEndpointIndex(idx)}
+              className={`px-3 py-1.5 rounded text-xs font-mono font-medium transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap ${
+                isSelected
+                  ? 'bg-zinc-800 text-zinc-100 border border-zinc-700 shadow-sm'
+                  : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/60 border border-transparent'
+              }`}
+            >
+              <span
+                className={`text-[10px] font-bold px-1 rounded ${
+                  isGet ? 'bg-cyan-500/10 text-cyan-400' : 'bg-purple-500/10 text-purple-400'
+                }`}
+              >
+                {isGet ? 'GET' : 'POST'}
               </span>
-            </div>
-
-            <div className="overflow-x-auto rounded-lg border border-slate-800/80 bg-slate-950/60">
-              <table className="w-full text-left text-xs font-mono">
-                <thead className="bg-slate-900/80 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-800">
-                  <tr>
-                    <th className="py-2 px-3">File Location</th>
-                    <th className="py-2 px-3">Line</th>
-                    <th className="py-2 px-3">Code Snippet</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-800/50 text-slate-300">
-                  {item.callSites.slice(0, 5).map((cs, cIdx) => (
-                    <tr key={cIdx} className="hover:bg-slate-900/40 transition-colors">
-                      <td className="py-2 px-3 text-cyan-400 font-semibold truncate max-w-[160px]">
-                        {cs.file.replace(/^demo-repo\//, '')}
-                      </td>
-                      <td className="py-2 px-3 text-slate-400">L{cs.line}</td>
-                      <td className="py-2 px-3 text-slate-300 font-mono text-[11px] truncate max-w-[220px]">
-                        <code className="text-slate-200">{cs.snippet}</code>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              {item.callSites.length > 5 && (
-                <div className="py-1.5 px-3 text-[10px] font-mono text-slate-500 bg-slate-900/30 text-center">
-                  + {item.callSites.length - 5} additional AST call sites mapped
-                </div>
-              )}
-            </div>
-          </div>
-        ))}
+              <span>{item.changedEndpoint.replace(/^(GET|POST)\s*/, '')}</span>
+              <span className="text-[10px] px-1.5 py-0.2 bg-zinc-900 text-zinc-400 rounded-full border border-zinc-800">
+                {item.callSites.length}
+              </span>
+            </button>
+          );
+        })}
       </div>
 
-      <div className="glass-panel rounded-xl overflow-hidden border border-purple-500/30">
+      <div className="p-3 bg-zinc-950/40 border-b border-zinc-800/80 shrink-0">
+        <div className="flex items-center gap-2 text-xs font-mono text-amber-400">
+          <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+          <span className="font-semibold">{activeItem.diffDetail}</span>
+        </div>
+      </div>
+
+      <div className="flex-1 overflow-y-auto min-h-0 p-2">
+        <table className="w-full text-left border-collapse text-xs font-mono">
+          <thead className="sticky top-0 bg-zinc-900/90 text-zinc-400 uppercase text-[10px] tracking-wider border-b border-zinc-800">
+            <tr>
+              <th className="py-2 px-3">File Path</th>
+              <th className="py-2 px-3 w-16">Line</th>
+              <th className="py-2 px-3">Code Snippet</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-zinc-800/40">
+            {activeItem.callSites.map((cs: CallSite, cIdx: number) => (
+              <tr
+                key={cIdx}
+                className={cIdx % 2 === 0 ? 'bg-zinc-950/40' : 'bg-zinc-900/20'}
+              >
+                <td className="py-2 px-3 text-zinc-300 font-medium truncate max-w-[150px]">
+                  {cs.file.replace(/^demo-repo\//, '')}
+                </td>
+                <td className="py-2 px-3 text-zinc-400">L{cs.line}</td>
+                <td className="py-2 px-3 text-zinc-400 font-mono text-[11px] truncate max-w-[220px]">
+                  <code>{cs.snippet}</code>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="border-t border-zinc-800/80 shrink-0 bg-zinc-950/80">
         <button
           onClick={() => setShowAdapterCode(!showAdapterCode)}
-          className="w-full flex items-center justify-between p-3.5 bg-purple-950/30 hover:bg-purple-950/50 transition-colors text-left cursor-pointer"
+          className="w-full px-3 py-2 text-xs font-mono text-zinc-400 hover:text-zinc-200 flex items-center justify-between cursor-pointer"
         >
-          <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-purple-400" />
-            <span className="text-xs font-mono font-bold text-purple-200">
-              Module B: Synthesized Adapter Shim (migrationAdapter.ts)
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-purple-900/50 text-purple-300 border border-purple-700/50">
-              Auto-Generated
-            </span>
-            {showAdapterCode ? (
-              <ChevronDown className="w-4 h-4 text-purple-400" />
-            ) : (
-              <ChevronRight className="w-4 h-4 text-purple-400" />
-            )}
-          </div>
+          <span className="flex items-center gap-1.5 font-medium">
+            <Terminal className="w-3.5 h-3.5 text-emerald-400" />
+            <span>[View Generated migrationAdapter.ts]</span>
+          </span>
+          {showAdapterCode ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
         </button>
 
         {showAdapterCode && (
-          <div className="p-4 bg-slate-950/90 border-t border-purple-900/30">
-            <div className="flex items-center gap-2 mb-2 text-[11px] font-mono text-slate-400">
-              <Terminal className="w-3.5 h-3.5 text-purple-400" />
-              <span>demo-repo/src/client/migrationAdapter.ts</span>
-            </div>
-            <pre className="text-xs font-mono text-purple-200/90 bg-slate-900/90 p-3.5 rounded-lg overflow-x-auto max-h-64 border border-slate-800 leading-relaxed">
-              <code>{adapterCode || '// Migration adapter code generating...'}</code>
+          <div className="p-3 bg-zinc-950 border-t border-zinc-800 text-xs font-mono max-h-48 overflow-y-auto">
+            <pre className="text-[11px] text-zinc-300 leading-relaxed">
+              <code>{adapterCode}</code>
             </pre>
           </div>
         )}
