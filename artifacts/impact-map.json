@@ -23,30 +23,6 @@
         "endpoint": "GET /api/orders/{id}"
       },
       {
-        "file": "demo-repo/src/client/migrationAdapter.d.ts",
-        "line": 31,
-        "snippet": "* Adapts incoming GET /api/orders/{id} response.",
-        "endpoint": "GET /api/orders/{id}"
-      },
-      {
-        "file": "demo-repo/src/client/migrationAdapter.js",
-        "line": 18,
-        "snippet": "* Adapts incoming GET /api/orders/{id} response.",
-        "endpoint": "GET /api/orders/{id}"
-      },
-      {
-        "file": "demo-repo/src/client/migrationAdapter.js",
-        "line": 24,
-        "snippet": "if (response && response.totalAmount !== undefined && response.total === undefined) {",
-        "endpoint": "GET /api/orders/{id}"
-      },
-      {
-        "file": "demo-repo/src/client/migrationAdapter.js",
-        "line": 27,
-        "snippet": "total: response.totalAmount,",
-        "endpoint": "GET /api/orders/{id}"
-      },
-      {
         "file": "demo-repo/src/client/migrationAdapter.ts",
         "line": 39,
         "snippet": "* Adapts incoming GET /api/orders/{id} response.",
@@ -348,60 +324,6 @@
         "file": "demo-repo/src/client/apiClient.ts",
         "line": 73,
         "snippet": "return defaultApiClient.createOrder(payload);",
-        "endpoint": "POST /api/orders"
-      },
-      {
-        "file": "demo-repo/src/client/migrationAdapter.d.ts",
-        "line": 14,
-        "snippet": "customer_id?: string;",
-        "endpoint": "POST /api/orders"
-      },
-      {
-        "file": "demo-repo/src/client/migrationAdapter.d.ts",
-        "line": 36,
-        "snippet": "* Adapts outgoing POST /api/orders request payload.",
-        "endpoint": "POST /api/orders"
-      },
-      {
-        "file": "demo-repo/src/client/migrationAdapter.d.ts",
-        "line": 37,
-        "snippet": "* If customer_id is present and customer object is missing, maps customer: { id: customer_id }.",
-        "endpoint": "POST /api/orders"
-      },
-      {
-        "file": "demo-repo/src/client/migrationAdapter.js",
-        "line": 33,
-        "snippet": "* Adapts outgoing POST /api/orders request payload.",
-        "endpoint": "POST /api/orders"
-      },
-      {
-        "file": "demo-repo/src/client/migrationAdapter.js",
-        "line": 34,
-        "snippet": "* If customer_id is present and customer object is missing, maps customer: { id: customer_id }.",
-        "endpoint": "POST /api/orders"
-      },
-      {
-        "file": "demo-repo/src/client/migrationAdapter.js",
-        "line": 39,
-        "snippet": "if (payload && payload.customer_id && !payload.customer) {",
-        "endpoint": "POST /api/orders"
-      },
-      {
-        "file": "demo-repo/src/client/migrationAdapter.js",
-        "line": 40,
-        "snippet": "const { customer_id, ...rest } = payload;",
-        "endpoint": "POST /api/orders"
-      },
-      {
-        "file": "demo-repo/src/client/migrationAdapter.js",
-        "line": 43,
-        "snippet": "customer_id,",
-        "endpoint": "POST /api/orders"
-      },
-      {
-        "file": "demo-repo/src/client/migrationAdapter.js",
-        "line": 44,
-        "snippet": "customer: { id: customer_id },",
         "endpoint": "POST /api/orders"
       },
       {
