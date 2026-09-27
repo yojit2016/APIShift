@@ -10,6 +10,7 @@ const INITIAL_PORT = Number(process.env.PORT) || 3000;
 
 app.use(cors());
 app.use(express.json());
+app.use("/bob_sessions", express.static(path.resolve(process.cwd(), "bob_sessions")));
 
 // API Endpoints
 app.get("/api/artifacts", (req: Request, res: Response) => {
@@ -90,11 +91,11 @@ const taskBobcoinCosts: Record<string, number> = {
 app.get("/api/bob-sessions", (req: Request, res: Response) => {
   try {
     const sessionsDir = path.resolve(process.cwd(), "bob_sessions");
-    const ignoredFiles = new Set(["desktop.ini", "Thumbs.db", ".DS_Store"]);
     const files = fs.existsSync(sessionsDir)
       ? fs.readdirSync(sessionsDir).filter((file) => {
-          if (file.startsWith(".") || ignoredFiles.has(file)) return false;
-          return file.endsWith(".png");
+          if (file.startsWith(".")) return false;
+          const lower = file.toLowerCase();
+          return lower.endsWith(".png") && lower !== "desktop.ini" && lower !== "thumbs.db" && lower !== ".ds_store";
         })
       : [];
 
