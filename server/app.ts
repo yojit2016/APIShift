@@ -83,7 +83,13 @@ app.post("/api/run-pipeline", (req: Request, res: Response) => {
 app.get("/api/bob-sessions", (req: Request, res: Response) => {
   try {
     const sessionsDir = path.resolve(process.cwd(), "bob_sessions");
-    const files = fs.existsSync(sessionsDir) ? fs.readdirSync(sessionsDir) : [];
+    const ignoredFiles = new Set(["desktop.ini", "Thumbs.db", ".DS_Store"]);
+    const files = fs.existsSync(sessionsDir)
+      ? fs.readdirSync(sessionsDir).filter((file) => {
+          if (file.startsWith(".") || ignoredFiles.has(file)) return false;
+          return file.endsWith(".png");
+        })
+      : [];
     res.json({
       sessions: files.map((f) => ({
         id: f,
