@@ -11,6 +11,7 @@ export const App: React.FC = () => {
   const [clusterReport, setClusterReport] = useState<any | null>(null);
   const [adapterCode, setAdapterCode] = useState<string>('');
   const [bobSessions, setBobSessions] = useState<any[]>([]);
+  const [totalBobcoins, setTotalBobcoins] = useState<number | null>(null);
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [isBobModalOpen, setIsBobModalOpen] = useState<boolean>(false);
 
@@ -34,6 +35,9 @@ export const App: React.FC = () => {
       if (res.ok) {
         const data = await res.json();
         setBobSessions(data.sessions || []);
+        if (typeof data.totalBobcoins === 'number') {
+          setTotalBobcoins(data.totalBobcoins);
+        }
       }
     } catch (err) {
       console.error('Failed to fetch bob sessions:', err);
@@ -54,6 +58,7 @@ export const App: React.FC = () => {
         setImpactMap(data.impactMap || []);
         setClusterReport(data.clusterReport || null);
         setAdapterCode(data.adapterCode || '');
+        await fetchBobSessions();
       }
     } catch (err) {
       console.error('Failed to run pipeline:', err);
@@ -102,6 +107,8 @@ export const App: React.FC = () => {
         autoFixed={summary.autoFixed}
         clustersCount={summary.clusters}
         timeSeconds={summary.timeSeconds}
+        totalFailures={summary.totalFailingBefore}
+        totalBobcoins={totalBobcoins}
       />
 
       <BobSessionsModal

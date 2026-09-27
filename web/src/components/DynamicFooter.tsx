@@ -6,13 +6,19 @@ interface DynamicFooterProps {
   autoFixed?: number;
   clustersCount?: number;
   timeSeconds?: number;
+  totalFailures?: number;
+  totalBobcoins?: number | null;
 }
 
 export const DynamicFooter: React.FC<DynamicFooterProps> = ({
   totalProbes = 40,
   autoFixed = 23,
   timeSeconds = 12.05,
+  totalFailures = 23,
+  totalBobcoins = null,
 }) => {
+  const passedProbes = totalProbes - (totalFailures - autoFixed);
+
   return (
     <footer className="h-7 bg-zinc-950 border-t border-zinc-800 text-xs text-zinc-400 font-mono px-4 flex items-center justify-between shrink-0 select-none">
       <div className="flex items-center gap-2">
@@ -22,7 +28,7 @@ export const DynamicFooter: React.FC<DynamicFooterProps> = ({
         </span>
         <span className="text-zinc-700">|</span>
         <span className="text-zinc-300">
-          Probes: <span className="text-emerald-400 font-semibold">{autoFixed === 23 ? `${totalProbes}/${totalProbes} Passed` : `${totalProbes - 23}/${totalProbes} Passed`}</span>
+          Probes: <span className="text-emerald-400 font-semibold">{passedProbes}/{totalProbes} Passed</span>
         </span>
         <span className="text-zinc-700">|</span>
         <span className="text-zinc-300">
@@ -32,9 +38,12 @@ export const DynamicFooter: React.FC<DynamicFooterProps> = ({
 
       <div className="flex items-center gap-2">
         <span className="text-zinc-400">
-          Bobcoins: <span className="text-amber-400 font-semibold">4.85 used</span>
+          Bobcoins: <span className="text-amber-400 font-semibold">
+            {totalBobcoins !== null ? `${totalBobcoins.toFixed(2)} used` : '1.09 used'}
+          </span>
         </span>
       </div>
     </footer>
   );
 };
+

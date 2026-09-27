@@ -80,6 +80,13 @@ app.post("/api/run-pipeline", (req: Request, res: Response) => {
   }
 });
 
+const taskBobcoinCosts: Record<string, number> = {
+  "team_task01_impact_analysis_summary.png": 0.25,
+  "team_task02_migration_codegen_summary.png": 0.35,
+  "team_task03_failure_clustering_summary.png": 0.20,
+  "team_task04_rootcause_fix_summary.png": 0.29,
+};
+
 app.get("/api/bob-sessions", (req: Request, res: Response) => {
   try {
     const sessionsDir = path.resolve(process.cwd(), "bob_sessions");
@@ -90,7 +97,15 @@ app.get("/api/bob-sessions", (req: Request, res: Response) => {
           return file.endsWith(".png");
         })
       : [];
+
+    let totalBobcoins = 0;
+    for (const file of files) {
+      totalBobcoins += taskBobcoinCosts[file] ?? 0.25;
+    }
+
     res.json({
+      totalBobcoins: Number(totalBobcoins.toFixed(2)),
+      sessionCount: files.length,
       sessions: files.map((f) => ({
         id: f,
         name: f,
