@@ -9,6 +9,7 @@
     "test": "vitest run",
     "test:fixture": "vitest run demo-repo/tests --reporter=json --outputFile=artifacts/test-results.json",
     "pipeline": "tsx scripts/run_pipeline.ts",
+    "test:verify": "tsx scripts/run_pipeline.ts",
     "dev:web": "tsx server/app.ts"
   },
   "dependencies": {
