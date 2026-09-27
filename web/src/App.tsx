@@ -5,15 +5,16 @@ import { ImpactMapColumn } from './components/ImpactMapColumn';
 import { ClusterReportColumn } from './components/ClusterReportColumn';
 import { DynamicFooter } from './components/DynamicFooter';
 import { BobSessionsModal } from './components/BobSessionsModal';
-import { fallbackArtifacts } from './data/fallbackData';
+import { staticData } from './data/staticData';
 
 export const App: React.FC = () => {
-  const [impactMap, setImpactMap] = useState<any[]>(fallbackArtifacts.impactMap);
-  const [clusterReport, setClusterReport] = useState<any | null>(fallbackArtifacts.clusterReport);
-  const [adapterCode, setAdapterCode] = useState<string>(fallbackArtifacts.adapterCode);
-  const [bobSessions, setBobSessions] = useState<any[]>(fallbackArtifacts.bobSessions.sessions);
-  const [totalBobcoins, setTotalBobcoins] = useState<number | null>(fallbackArtifacts.bobSessions.totalBobcoins);
+  const [impactMap, setImpactMap] = useState<any[]>(staticData.blastRadius);
+  const [clusterReport, setClusterReport] = useState<any | null>(staticData.clusterReport);
+  const [adapterCode, setAdapterCode] = useState<string>(staticData.adapterCode);
+  const [bobSessions, setBobSessions] = useState<any[]>(staticData.bobSessions.sessions);
+  const [totalBobcoins, setTotalBobcoins] = useState<number | null>(staticData.bobSessions.totalBobcoins);
   const [isRunning, setIsRunning] = useState<boolean>(false);
+  const [currentStep, setCurrentStep] = useState<number>(4);
   const [isBobModalOpen, setIsBobModalOpen] = useState<boolean>(false);
 
   const fetchArtifacts = async () => {
@@ -22,19 +23,19 @@ export const App: React.FC = () => {
       if (res.ok) {
         const data = await res.json();
         if (data && (data.impactMap?.length || data.clusterReport)) {
-          setImpactMap(data.impactMap || fallbackArtifacts.impactMap);
-          setClusterReport(data.clusterReport || fallbackArtifacts.clusterReport);
-          setAdapterCode(data.adapterCode || fallbackArtifacts.adapterCode);
+          setImpactMap(data.impactMap || staticData.blastRadius);
+          setClusterReport(data.clusterReport || staticData.clusterReport);
+          setAdapterCode(data.adapterCode || staticData.adapterCode);
           return;
         }
       }
     } catch (err) {
-      console.warn('Backend API /api/artifacts unavailable. Hydrating from fallbackArtifacts:', err);
+      console.warn('Backend API /api/artifacts unavailable. Operating in standalone demo mode with embedded static data.');
     }
-    // Fallback hydration
-    setImpactMap(fallbackArtifacts.impactMap);
-    setClusterReport(fallbackArtifacts.clusterReport);
-    setAdapterCode(fallbackArtifacts.adapterCode);
+    // Standalone static hydration
+    setImpactMap(staticData.blastRadius);
+    setClusterReport(staticData.clusterReport);
+    setAdapterCode(staticData.adapterCode);
   };
 
   const fetchBobSessions = async () => {
@@ -51,11 +52,10 @@ export const App: React.FC = () => {
         }
       }
     } catch (err) {
-      console.warn('Bob sessions API unavailable. Hydrating from fallbackArtifacts:', err);
+      console.warn('Bob sessions API unavailable. Operating in standalone demo mode.');
     }
-    // Fallback hydration
-    setBobSessions(fallbackArtifacts.bobSessions.sessions);
-    setTotalBobcoins(fallbackArtifacts.bobSessions.totalBobcoins);
+    setBobSessions(staticData.bobSessions.sessions);
+    setTotalBobcoins(staticData.bobSessions.totalBobcoins);
   };
 
   useEffect(() => {
@@ -65,37 +65,44 @@ export const App: React.FC = () => {
 
   const handleRunPipeline = async () => {
     setIsRunning(true);
+    setCurrentStep(0);
+
     try {
+      // Try backend if available
       const res = await fetch('/api/run-pipeline', { method: 'POST' });
       if (res.ok) {
         const data = await res.json();
-        setImpactMap(data.impactMap || fallbackArtifacts.impactMap);
-        setClusterReport(data.clusterReport || fallbackArtifacts.clusterReport);
-        setAdapterCode(data.adapterCode || fallbackArtifacts.adapterCode);
+        setCurrentStep(4);
+        setImpactMap(data.impactMap || staticData.blastRadius);
+        setClusterReport(data.clusterReport || staticData.clusterReport);
+        setAdapterCode(data.adapterCode || staticData.adapterCode);
         await fetchBobSessions();
-      } else {
-        // Fallback simulation when on static Vercel build
-        await new Promise((r) => setTimeout(r, 1200));
-        setImpactMap(fallbackArtifacts.impactMap);
-        setClusterReport(fallbackArtifacts.clusterReport);
-        setAdapterCode(fallbackArtifacts.adapterCode);
-        setBobSessions(fallbackArtifacts.bobSessions.sessions);
-        setTotalBobcoins(fallbackArtifacts.bobSessions.totalBobcoins);
+        setIsRunning(false);
+        return;
       }
     } catch (err) {
-      console.warn('Pipeline API failed; running client-side fallback simulation:', err);
-      await new Promise((r) => setTimeout(r, 1200));
-      setImpactMap(fallbackArtifacts.impactMap);
-      setClusterReport(fallbackArtifacts.clusterReport);
-      setAdapterCode(fallbackArtifacts.adapterCode);
-      setBobSessions(fallbackArtifacts.bobSessions.sessions);
-      setTotalBobcoins(fallbackArtifacts.bobSessions.totalBobcoins);
-    } finally {
-      setIsRunning(false);
+      console.warn('Backend unavailable; executing animated closed-loop migration simulation...');
     }
+
+    // Animated 2-3 second simulation for client-side standalone demo
+    await new Promise((r) => setTimeout(r, 600));
+    setCurrentStep(1);
+    await new Promise((r) => setTimeout(r, 600));
+    setCurrentStep(2);
+    await new Promise((r) => setTimeout(r, 600));
+    setCurrentStep(3);
+    await new Promise((r) => setTimeout(r, 600));
+
+    setCurrentStep(4);
+    setImpactMap(staticData.blastRadius);
+    setClusterReport(staticData.clusterReport);
+    setAdapterCode(staticData.adapterCode);
+    setBobSessions(staticData.bobSessions.sessions);
+    setTotalBobcoins(staticData.bobSessions.totalBobcoins);
+    setIsRunning(false);
   };
 
-  const summary = clusterReport?.summary || fallbackArtifacts.clusterReport.summary;
+  const summary = clusterReport?.summary || staticData.clusterReport.summary;
 
   return (
     <div className="h-screen w-screen bg-[#090d16] text-zinc-100 flex flex-col font-sans overflow-hidden">
@@ -107,6 +114,7 @@ export const App: React.FC = () => {
 
       <PipelineRibbon
         isRunning={isRunning}
+        currentStep={currentStep}
         totalFailures={summary.totalFailingBefore}
         totalClusters={summary.clusters}
         autoFixed={summary.autoFixed}
