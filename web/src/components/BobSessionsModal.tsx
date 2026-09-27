@@ -22,8 +22,32 @@ export const BobSessionsModal: React.FC<BobSessionsModalProps> = ({ isOpen, onCl
 
   if (!isOpen) return null;
 
-  const visibleSessions = sessions.filter((s) => s.name?.toLowerCase().endsWith('.png'));
-  const sessionCount = visibleSessions.length > 0 ? visibleSessions.length : 4;
+  const defaultSessionNames = [
+    'team_task01_impact_analysis_summary.png',
+    'team_task02_migration_codegen_summary.png',
+    'team_task03_failure_clustering_summary.png',
+    'team_task04_rootcause_fix_summary.png',
+  ];
+
+  const visibleSessions = sessions && sessions.length > 0
+    ? sessions.filter((s) => s.name?.toLowerCase().endsWith('.png'))
+    : defaultSessionNames.map((filename) => ({
+        name: filename,
+        path: `/bob_sessions/${filename}`,
+        status: 'LOGGED',
+      }));
+
+  const sessionList = visibleSessions.length > 0 ? visibleSessions : defaultSessionNames.map((filename) => ({
+    name: filename,
+    path: `/bob_sessions/${filename}`,
+    status: 'LOGGED',
+  }));
+
+  const getImageSrc = (s: any) => {
+    if (s.path && s.path.startsWith('/bob_sessions/')) return s.path;
+    const name = s.name || 'session.png';
+    return `/bob_sessions/${name}`;
+  };
 
   return (
     <>
@@ -54,21 +78,22 @@ export const BobSessionsModal: React.FC<BobSessionsModalProps> = ({ isOpen, onCl
 
             <div className="space-y-3">
               <h4 className="text-xs font-semibold uppercase text-zinc-400 tracking-wider">
-                Recorded Session Artifacts ({sessionCount})
+                Recorded Session Artifacts ({sessionList.length})
               </h4>
 
-              {visibleSessions.length > 0 ? (
-                visibleSessions.map((s, idx) => (
+              {sessionList.map((s, idx) => {
+                const imageSrc = getImageSrc(s);
+                return (
                   <div
                     key={idx}
-                    onClick={() => setActiveImage({ name: s.name, url: s.path })}
+                    onClick={() => setActiveImage({ name: s.name, url: imageSrc })}
                     className="p-3 rounded-lg bg-zinc-950/80 border border-zinc-800/80 hover:border-zinc-600 text-zinc-300 font-mono text-xs transition-all flex items-center justify-between cursor-pointer group"
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       <FileCode className="w-4 h-4 text-zinc-400 group-hover:text-emerald-400 transition-colors shrink-0" />
                       <div className="min-w-0">
                         <div className="font-semibold text-zinc-200 group-hover:text-white transition-colors truncate">{s.name}</div>
-                        <div className="text-[10px] text-zinc-500 font-sans truncate">{s.path}</div>
+                        <div className="text-[10px] text-zinc-500 font-sans truncate">{imageSrc}</div>
                       </div>
                     </div>
                     <div className="flex items-center gap-3 shrink-0">
@@ -79,7 +104,7 @@ export const BobSessionsModal: React.FC<BobSessionsModalProps> = ({ isOpen, onCl
                       <div className="flex items-center gap-1.5 text-zinc-400 group-hover:text-zinc-200">
                         <Eye className="w-3.5 h-3.5" />
                         <a
-                          href={s.path}
+                          href={imageSrc}
                           target="_blank"
                           rel="noreferrer"
                           onClick={(e) => e.stopPropagation()}
@@ -91,51 +116,8 @@ export const BobSessionsModal: React.FC<BobSessionsModalProps> = ({ isOpen, onCl
                       </div>
                     </div>
                   </div>
-                ))
-              ) : (
-                [
-                  'team_task01_impact_analysis_summary.png',
-                  'team_task02_migration_codegen_summary.png',
-                  'team_task03_failure_clustering_summary.png',
-                  'team_task04_rootcause_fix_summary.png',
-                ].map((filename, idx) => {
-                  const sPath = `/api/bob-sessions/view/${filename}`;
-                  return (
-                    <div
-                      key={idx}
-                      onClick={() => setActiveImage({ name: filename, url: sPath })}
-                      className="p-3 rounded-lg bg-zinc-950/80 border border-zinc-800/80 hover:border-zinc-600 text-zinc-300 font-mono text-xs transition-all flex items-center justify-between cursor-pointer group"
-                    >
-                      <div className="flex items-center gap-3 min-w-0">
-                        <FileCode className="w-4 h-4 text-zinc-400 group-hover:text-emerald-400 transition-colors shrink-0" />
-                        <div className="min-w-0">
-                          <div className="font-semibold text-zinc-200 group-hover:text-white transition-colors truncate">{filename}</div>
-                          <div className="text-[10px] text-zinc-500 truncate">{sPath}</div>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3 shrink-0">
-                        <div className="flex items-center gap-1.5 px-2 py-0.5 rounded text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 text-[11px] font-medium">
-                          <CheckCircle2 className="w-3.5 h-3.5" />
-                          <span>VERIFIED</span>
-                        </div>
-                        <div className="flex items-center gap-1.5 text-zinc-400 group-hover:text-zinc-200">
-                          <Eye className="w-3.5 h-3.5" />
-                          <a
-                            href={sPath}
-                            target="_blank"
-                            rel="noreferrer"
-                            onClick={(e) => e.stopPropagation()}
-                            className="p-1 hover:text-cyan-400 transition-colors"
-                            title="Open image in new tab"
-                          >
-                            <ExternalLink className="w-3.5 h-3.5" />
-                          </a>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })
-              )}
+                );
+              })}
             </div>
           </div>
 

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { AlertCircle, ChevronDown, ChevronRight, Terminal, Code2 } from 'lucide-react';
+import { fallbackImpactMap, fallbackAdapterCode } from '../data/fallbackData';
 
 interface CallSite {
   file: string;
@@ -25,7 +26,10 @@ export const ImpactMapColumn: React.FC<ImpactMapColumnProps> = ({ impactMap, ada
   const [selectedEndpointIndex, setSelectedEndpointIndex] = useState<number>(0);
   const [showAdapterCode, setShowAdapterCode] = useState<boolean>(false);
 
-  const activeItem = impactMap[selectedEndpointIndex] || impactMap[0] || {
+  const safeImpactMap = impactMap && impactMap.length > 0 ? impactMap : fallbackImpactMap;
+  const safeAdapterCode = adapterCode || fallbackAdapterCode;
+
+  const activeItem = safeImpactMap[selectedEndpointIndex] || safeImpactMap[0] || {
     changedEndpoint: 'GET /api/orders/{id}',
     changeType: 'schema-change',
     diffDetail: 'Response property total renamed to totalAmount',
@@ -47,7 +51,7 @@ export const ImpactMapColumn: React.FC<ImpactMapColumnProps> = ({ impactMap, ada
       </div>
 
       <div className="flex border-b border-zinc-800/80 bg-zinc-950/80 p-1.5 gap-1 shrink-0 overflow-x-auto">
-        {impactMap.map((item, idx) => {
+        {safeImpactMap.map((item, idx) => {
           const isSelected = idx === selectedEndpointIndex;
           const isGet = item.changedEndpoint.startsWith('GET');
           return (
@@ -126,7 +130,7 @@ export const ImpactMapColumn: React.FC<ImpactMapColumnProps> = ({ impactMap, ada
         {showAdapterCode && (
           <div className="p-3 bg-zinc-950 border-t border-zinc-800 text-xs font-mono max-h-48 overflow-y-auto">
             <pre className="text-[11px] text-zinc-300 leading-relaxed">
-              <code>{adapterCode}</code>
+              <code>{safeAdapterCode}</code>
             </pre>
           </div>
         )}

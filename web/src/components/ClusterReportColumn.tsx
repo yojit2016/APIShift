@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Layers2, CheckCircle2, ChevronDown, ChevronRight, FileText, Activity } from 'lucide-react';
 import { EvidenceLedger } from './EvidenceLedger';
+import { fallbackClusterReport } from '../data/fallbackData';
 
 interface FailureCluster {
   clusterId: string;
@@ -32,10 +33,12 @@ export const ClusterReportColumn: React.FC<ClusterReportColumnProps> = ({ cluste
     setExpandedCluster(expandedCluster === id ? null : id);
   };
 
-  const totalFailing = clusterReport?.summary.totalFailingBefore ?? 23;
-  const totalClustersCount = clusterReport?.summary.clusters ?? 2;
-  const autoFixed = clusterReport?.summary.autoFixed ?? 23;
-  const clusters = clusterReport?.clusters ?? [];
+  const safeReport = clusterReport && clusterReport.clusters?.length ? clusterReport : fallbackClusterReport;
+
+  const totalFailing = safeReport.summary.totalFailingBefore;
+  const totalClustersCount = safeReport.summary.clusters;
+  const autoFixed = safeReport.summary.autoFixed;
+  const clusters = safeReport.clusters;
 
   const noiseReductionRate = totalFailing > 0
     ? (((totalFailing - totalClustersCount) / totalFailing) * 100).toFixed(1)
@@ -73,7 +76,7 @@ export const ClusterReportColumn: React.FC<ClusterReportColumnProps> = ({ cluste
             </div>
           </div>
 
-          <div className="text-right">
+          <div className="text-text-right">
             <span className="text-xs font-mono font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
               {noiseReductionRate}% Noise Reduction
             </span>
