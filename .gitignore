@@ -12,3 +12,4 @@ server/**/*.js
 server/**/*.d.ts
 scripts/**/*.js
 scripts/**/*.d.ts
+.vercel
