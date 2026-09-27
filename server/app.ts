@@ -10,7 +10,19 @@ const INITIAL_PORT = Number(process.env.PORT) || 3000;
 
 app.use(cors());
 app.use(express.json());
-app.use("/bob_sessions", express.static(path.resolve(process.cwd(), "bob_sessions")));
+const bobSessionsDir = path.resolve(process.cwd(), "bob_sessions");
+app.use("/bob_sessions", express.static(bobSessionsDir));
+
+app.get("/api/bob-sessions/view/:filename", (req: Request, res: Response) => {
+  const filenameStr = typeof req.params.filename === "string" ? req.params.filename : String(req.params.filename);
+  const safeName = path.basename(filenameStr);
+  const filePath = path.join(bobSessionsDir, safeName);
+  if (fs.existsSync(filePath) && safeName.toLowerCase().endsWith(".png")) {
+    res.setHeader("Content-Type", "image/png");
+    return res.sendFile(filePath);
+  }
+  res.status(404).send("Image not found");
+});
 
 // API Endpoints
 app.get("/api/artifacts", (req: Request, res: Response) => {
@@ -90,27 +102,23 @@ const taskBobcoinCosts: Record<string, number> = {
 
 app.get("/api/bob-sessions", (req: Request, res: Response) => {
   try {
-    const sessionsDir = path.resolve(process.cwd(), "bob_sessions");
-    const files = fs.existsSync(sessionsDir)
-      ? fs.readdirSync(sessionsDir).filter((file) => {
-          if (file.startsWith(".")) return false;
-          const lower = file.toLowerCase();
-          return lower.endsWith(".png") && lower !== "desktop.ini" && lower !== "thumbs.db" && lower !== ".ds_store";
-        })
+    const pngFiles = fs.existsSync(bobSessionsDir)
+      ? fs.readdirSync(bobSessionsDir).filter((f) => f.toLowerCase().endsWith(".png"))
       : [];
 
     let totalBobcoins = 0;
-    for (const file of files) {
+    for (const file of pngFiles) {
       totalBobcoins += taskBobcoinCosts[file] ?? 0.25;
     }
 
     res.json({
       totalBobcoins: Number(totalBobcoins.toFixed(2)),
-      sessionCount: files.length,
-      sessions: files.map((f) => ({
-        id: f,
-        name: f,
-        path: `/bob_sessions/${f}`,
+      sessionCount: pngFiles.length,
+      sessions: pngFiles.map((file) => ({
+        id: file,
+        name: file,
+        path: `/api/bob-sessions/view/${file}`,
+        status: "LOGGED",
         timestamp: new Date().toISOString(),
       })),
     });
