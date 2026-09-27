@@ -1,0 +1,51 @@
+{
+  "clusters": [
+    {
+      "clusterId": "cluster-get-orders-total",
+      "endpoint": "GET /api/orders/{id}",
+      "failingTests": [
+        "Probe 01: fetchOrderSummary should return numeric total property",
+        "Probe 02: fetchOrderSummary should return non-undefined total",
+        "Probe 03: fetchOrderSummary total property should equal 150.0",
+        "Probe 04: calculateOrderTax for standard order #104",
+        "Probe 05: calculateOrderTax for express order #105",
+        "Probe 06: calculateOrderTax for international order #106",
+        "Probe 07: calculateOrderTax for bulk order #107",
+        "Probe 08: validateOrderMinimum for order #108",
+        "Probe 09: validateOrderMinimum for order #109",
+        "Probe 10: validateOrderMinimum for order #110",
+        "Probe 11: validateOrderMinimum for order #111",
+        "Probe 12: fetchOrderSummary response schema structure check",
+        "Probe 13: fetchOrderSummary for VIP customer order #113",
+        "Probe 14: calculateOrderTax for subscription order #114",
+        "Probe 15: validateOrderMinimum for wholesale order #115",
+        "Probe 16: fetchOrderSummary invoice total verification #116",
+        "Probe 17: calculateOrderTax with promo code order #117"
+      ],
+      "rootCause": "Schema Drift: Response property 'total' renamed to 'totalAmount' in GET /api/orders/{id}",
+      "fixApplied": true,
+      "verified": true
+    },
+    {
+      "clusterId": "cluster-post-orders-customer",
+      "endpoint": "POST /api/orders",
+      "failingTests": [
+        "Probe 18: placeOrder passing legacy customer_id cust_42",
+        "Probe 19: placeOrder passing legacy customer_id cust_guest",
+        "Probe 20: placeOrder passing legacy customer_id cust_corp_1",
+        "Probe 21: placeOrder passing legacy customer_id cust_prem_9",
+        "Probe 22: placeOrder passing legacy customer_id with multi-items",
+        "Probe 23: placeOrder passing legacy customer_id with promo payload"
+      ],
+      "rootCause": "Payload Drift: Field 'customer_id' unflattened to 'customer.id' in POST /api/orders",
+      "fixApplied": true,
+      "verified": true
+    }
+  ],
+  "summary": {
+    "totalFailingBefore": 23,
+    "clusters": 2,
+    "autoFixed": 23,
+    "timeSeconds": 10.42
+  }
+}

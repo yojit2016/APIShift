@@ -5,19 +5,14 @@ import { ImpactMapColumn } from './components/ImpactMapColumn';
 import { ClusterReportColumn } from './components/ClusterReportColumn';
 import { DynamicFooter } from './components/DynamicFooter';
 import { BobSessionsModal } from './components/BobSessionsModal';
-import {
-  fallbackImpactMap,
-  fallbackClusterReport,
-  fallbackAdapterCode,
-  fallbackBobSessions,
-} from './data/fallbackData';
+import { fallbackArtifacts } from './data/fallbackData';
 
 export const App: React.FC = () => {
-  const [impactMap, setImpactMap] = useState<any[]>(fallbackImpactMap);
-  const [clusterReport, setClusterReport] = useState<any | null>(fallbackClusterReport);
-  const [adapterCode, setAdapterCode] = useState<string>(fallbackAdapterCode);
-  const [bobSessions, setBobSessions] = useState<any[]>(fallbackBobSessions.sessions);
-  const [totalBobcoins, setTotalBobcoins] = useState<number | null>(fallbackBobSessions.totalBobcoins);
+  const [impactMap, setImpactMap] = useState<any[]>(fallbackArtifacts.impactMap);
+  const [clusterReport, setClusterReport] = useState<any | null>(fallbackArtifacts.clusterReport);
+  const [adapterCode, setAdapterCode] = useState<string>(fallbackArtifacts.adapterCode);
+  const [bobSessions, setBobSessions] = useState<any[]>(fallbackArtifacts.bobSessions.sessions);
+  const [totalBobcoins, setTotalBobcoins] = useState<number | null>(fallbackArtifacts.bobSessions.totalBobcoins);
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [isBobModalOpen, setIsBobModalOpen] = useState<boolean>(false);
 
@@ -27,19 +22,19 @@ export const App: React.FC = () => {
       if (res.ok) {
         const data = await res.json();
         if (data && (data.impactMap?.length || data.clusterReport)) {
-          setImpactMap(data.impactMap || fallbackImpactMap);
-          setClusterReport(data.clusterReport || fallbackClusterReport);
-          setAdapterCode(data.adapterCode || fallbackAdapterCode);
+          setImpactMap(data.impactMap || fallbackArtifacts.impactMap);
+          setClusterReport(data.clusterReport || fallbackArtifacts.clusterReport);
+          setAdapterCode(data.adapterCode || fallbackArtifacts.adapterCode);
           return;
         }
       }
     } catch (err) {
-      console.warn('Backend API unavailable. Hydrating with static verified artifacts:', err);
+      console.warn('Backend API /api/artifacts unavailable. Hydrating from fallbackArtifacts:', err);
     }
     // Fallback hydration
-    setImpactMap(fallbackImpactMap);
-    setClusterReport(fallbackClusterReport);
-    setAdapterCode(fallbackAdapterCode);
+    setImpactMap(fallbackArtifacts.impactMap);
+    setClusterReport(fallbackArtifacts.clusterReport);
+    setAdapterCode(fallbackArtifacts.adapterCode);
   };
 
   const fetchBobSessions = async () => {
@@ -56,11 +51,11 @@ export const App: React.FC = () => {
         }
       }
     } catch (err) {
-      console.warn('Bob sessions API unavailable. Hydrating with static metadata:', err);
+      console.warn('Bob sessions API unavailable. Hydrating from fallbackArtifacts:', err);
     }
     // Fallback hydration
-    setBobSessions(fallbackBobSessions.sessions);
-    setTotalBobcoins(fallbackBobSessions.totalBobcoins);
+    setBobSessions(fallbackArtifacts.bobSessions.sessions);
+    setTotalBobcoins(fallbackArtifacts.bobSessions.totalBobcoins);
   };
 
   useEffect(() => {
@@ -74,33 +69,33 @@ export const App: React.FC = () => {
       const res = await fetch('/api/run-pipeline', { method: 'POST' });
       if (res.ok) {
         const data = await res.json();
-        setImpactMap(data.impactMap || fallbackImpactMap);
-        setClusterReport(data.clusterReport || fallbackClusterReport);
-        setAdapterCode(data.adapterCode || fallbackAdapterCode);
+        setImpactMap(data.impactMap || fallbackArtifacts.impactMap);
+        setClusterReport(data.clusterReport || fallbackArtifacts.clusterReport);
+        setAdapterCode(data.adapterCode || fallbackArtifacts.adapterCode);
         await fetchBobSessions();
       } else {
         // Fallback simulation when on static Vercel build
         await new Promise((r) => setTimeout(r, 1200));
-        setImpactMap(fallbackImpactMap);
-        setClusterReport(fallbackClusterReport);
-        setAdapterCode(fallbackAdapterCode);
-        setBobSessions(fallbackBobSessions.sessions);
-        setTotalBobcoins(fallbackBobSessions.totalBobcoins);
+        setImpactMap(fallbackArtifacts.impactMap);
+        setClusterReport(fallbackArtifacts.clusterReport);
+        setAdapterCode(fallbackArtifacts.adapterCode);
+        setBobSessions(fallbackArtifacts.bobSessions.sessions);
+        setTotalBobcoins(fallbackArtifacts.bobSessions.totalBobcoins);
       }
     } catch (err) {
       console.warn('Pipeline API failed; running client-side fallback simulation:', err);
       await new Promise((r) => setTimeout(r, 1200));
-      setImpactMap(fallbackImpactMap);
-      setClusterReport(fallbackClusterReport);
-      setAdapterCode(fallbackAdapterCode);
-      setBobSessions(fallbackBobSessions.sessions);
-      setTotalBobcoins(fallbackBobSessions.totalBobcoins);
+      setImpactMap(fallbackArtifacts.impactMap);
+      setClusterReport(fallbackArtifacts.clusterReport);
+      setAdapterCode(fallbackArtifacts.adapterCode);
+      setBobSessions(fallbackArtifacts.bobSessions.sessions);
+      setTotalBobcoins(fallbackArtifacts.bobSessions.totalBobcoins);
     } finally {
       setIsRunning(false);
     }
   };
 
-  const summary = clusterReport?.summary || fallbackClusterReport.summary;
+  const summary = clusterReport?.summary || fallbackArtifacts.clusterReport.summary;
 
   return (
     <div className="h-screen w-screen bg-[#090d16] text-zinc-100 flex flex-col font-sans overflow-hidden">
