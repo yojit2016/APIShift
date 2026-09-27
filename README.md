@@ -50,28 +50,11 @@ Upstream API schema modifications—such as renaming response properties or unfl
 
 ## Architectural Pipeline
 
-```
-[ contracts/before.yaml vs contracts/after.yaml ]
-                   |
-                   v
-+--------------------------------------+
-| Module A: OpenAPI Impact Analyzer    | ---> Traverses AST call sites & maps blast radius
-+------------------+-------------------+
-                   |
-                   v
-+--------------------------------------+
-| Module B: Migration Codegen Engine   | ---> Generates non-destructive migrationAdapter.ts
-+------------------+-------------------+
-                   |
-                   v
-+--------------------------------------+
-| Module C: Failure Signature Clusterer| ---> Maps 23 failures -> 2 root causes (-91.3% noise)
-+------------------+-------------------+
-                   |
-                   v
-+--------------------------------------+
-| Module D: Fix & Verification Sandbox | ---> Audits test suite (40/40 green, 0 skipped)
-+--------------------------------------+
+```mermaid
+flowchart LR
+    A["Module A\nImpact Analyzer\n(AST Call-Site Scanner)"] --> B["Module B\nMigration Codegen\n(Adapter Shim Synthesizer)"]
+    B --> C["Module C\nFailure Clusterer\n(Signature Deduplicator)"]
+    C --> D["Module D\nFixer & Verification\n(Closed-Loop Probing)"]
 ```
 
 ---
